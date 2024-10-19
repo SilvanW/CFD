@@ -18,7 +18,7 @@ def plot_pressure_heatmap(simulation_grid: np.ndarray) -> figure:
     Returns:
         figure: plt.imshow Visualisation
     """
-    plt.imshow(simulation_grid[Layer.PRESSURE.value])
+    plt.imshow(simulation_grid[Layer.PRESSURE.value], origin="lower")
 
     plt.title("Druckfeld")
 
