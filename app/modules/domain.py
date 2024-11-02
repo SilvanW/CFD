@@ -18,6 +18,25 @@ class Layer(Enum):
     VELOCITY_Y = 2
 
 
+def set_simulation_grid_value(
+    simulation_grid: np.ndarray,
+    layer: Layer,
+    x_coordinate: int,
+    y_coordinate: int,
+    value: float,
+) -> None:
+    simulation_grid[layer.value, y_coordinate, x_coordinate] = value
+
+
+def get_simulation_grid_value(
+    simulation_grid: np.ndarray,
+    layer: Layer,
+    x_coordinate: int,
+    y_coordinate: int,
+) -> float:
+    return simulation_grid[layer.value, y_coordinate, x_coordinate]
+
+
 def generate_simulation_grid(domain_config: DomainConfig) -> np.ndarray:
     """Generate Simulation Grid based on Layers and domain config
 
@@ -28,7 +47,7 @@ def generate_simulation_grid(domain_config: DomainConfig) -> np.ndarray:
         np.ndarray: Generated Simulation Grid
     """
     simulation_grid = np.zeros(
-        (len(Layer), domain_config.grid_points_x + 2, domain_config.grid_points_y + 2)
+        (len(Layer), domain_config.grid_points_y + 2, domain_config.grid_points_x + 2)
     )
 
     # Add Dirichlet Boundary Conditions
