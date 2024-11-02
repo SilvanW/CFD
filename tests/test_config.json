@@ -1,0 +1,54 @@
+{
+    "solver": {
+        "max_iterations": 500,
+        "target_residual": 0.00001
+    },
+    "domain": {
+        "real_width": 1,
+        "real_height": 1,
+        "grid_points_x": 3,
+        "grid_points_y": 3,
+        "boundary_conditions": {
+            "velocity_top": {
+                "type": "dirichlet",
+                "x_direction": 1,
+                "y_direction": 0
+            },
+            "velocity_right": {
+                "type": "dirichlet",
+                "x_direction": 0,
+                "y_direction": 0
+            },
+            "velocity_bottom": {
+                "type": "dirichlet",
+                "x_direction": 0,
+                "y_direction": 0
+            },
+            "velocity_left": {
+                "type": "dirichlet",
+                "x_direction": 0,
+                "y_direction": 0
+            },
+            "pressure_top": {
+                "type": "dirichlet",
+                "value": 0
+            },
+            "pressure_right": {
+                "type": "neumann",
+                "value": 0
+            },
+            "pressure_bottom": {
+                "type": "neumann",
+                "value": 0
+            },
+            "pressure_left": {
+                "type": "neumann",
+                "value": 0
+            }
+        }
+    },
+    "fluid": {
+        "density": 1,
+        "kinematic_viscosity": 0.01
+    }
+}
