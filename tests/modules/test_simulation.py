@@ -10,7 +10,7 @@ from app.modules.domain import (
     get_simulation_grid_value,
     set_simulation_grid_value,
 )
-from app.modules.simulation import Direction, central_difference
+from app.modules.simulation import Direction, central_difference, laplace_operator
 
 
 @pytest.fixture
@@ -27,6 +27,7 @@ def simulation_grid(test_config: AppConfig) -> np.ndarray:
     return generate_simulation_grid(test_config.domain)
 
 
+# Central Difference
 def test_central_difference_u_x(simulation_grid):
     set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 1, 2, 2)
     set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 3, 2, 4)
@@ -68,3 +69,15 @@ def test_central_difference_v_y(simulation_grid):
     )
 
     assert get_simulation_grid_value(differenced_grid, Layer.VELOCITY_Y, 2, 2) == 1
+
+
+# Laplace Operator
+def test_laplace_operator(simulation_grid):
+    set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 2, 1, 4)
+    set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 2, 3, 4)
+    set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 1, 2, 4)
+    set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 3, 2, 4)
+
+    differenced_grid = laplace_operator(simulation_grid, Layer.VELOCITY_X, 2, 2, 1)
+
+    assert get_simulation_grid_value(differenced_grid, Layer.VELOCITY_X, 2, 2) == 16

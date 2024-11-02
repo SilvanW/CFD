@@ -2,9 +2,10 @@
 This Module is responsible for Simulation
 """
 
+from enum import Enum
+
 import numpy as np
 from modules.domain import Layer
-from enum import Enum
 
 
 class Direction(Enum):
