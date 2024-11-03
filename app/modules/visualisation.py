@@ -38,11 +38,15 @@ def plot_velocity_quiver_plot(
     velocity_x = simulation_grid[Layer.VELOCITY_X.value]
     velocity_y = simulation_grid[Layer.VELOCITY_Y.value]
 
+    magnitude = np.sqrt(velocity_x**2 + velocity_y**2)
+
     # Convert to angles
     velocity_x = velocity_x / np.sqrt(velocity_x**2 + velocity_y**2)
     velocity_y = velocity_y / np.sqrt(velocity_x**2 + velocity_y**2)
 
-    plt.quiver(velocity_x, velocity_y, headwidth=2)
+    quiver = plt.quiver(velocity_x, velocity_y, magnitude, headwidth=2)
+
+    plt.colorbar(quiver)
 
     plt.title("Geschwindigkeitsfeld")
 
