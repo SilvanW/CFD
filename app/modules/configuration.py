@@ -18,6 +18,7 @@ from pydantic import (
     FilePath,
     PositiveFloat,
     PositiveInt,
+    computed_field,
     validate_call,
 )
 
@@ -72,6 +73,11 @@ class FluidConfig(BaseModel):
 
     density: float
     kinematic_viscosity: float
+
+    @computed_field
+    @property
+    def dynamic_viscosity(self) -> float:
+        return self.kinematic_viscosity * self.density
 
 
 class AppConfig(BaseModel):
