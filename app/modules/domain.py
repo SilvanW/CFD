@@ -37,20 +37,10 @@ def get_simulation_grid_value(
     return simulation_grid[layer.value, y_coordinate, x_coordinate]
 
 
-def generate_simulation_grid(domain_config: DomainConfig) -> np.ndarray:
-    """Generate Simulation Grid based on Layers and domain config
-
-    Args:
-        domain_config (DomainConfig): domain configuration
-
-    Returns:
-        np.ndarray: Generated Simulation Grid
-    """
-    simulation_grid = np.zeros(
-        (len(Layer), domain_config.grid_points_y + 2, domain_config.grid_points_x + 2)
-    )
-
-    # Add Dirichlet Boundary Conditions
+def enforce_velocity_boundary_conditions(
+    simulation_grid: np.ndarray,
+    domain_config: DomainConfig,
+):
     # Velocity Top
     if (
         domain_config.boundary_conditions.velocity_top.type
@@ -103,6 +93,10 @@ def generate_simulation_grid(domain_config: DomainConfig) -> np.ndarray:
             domain_config.boundary_conditions.velocity_left.y_direction
         )
 
+
+def enforce_pressure_boundary_condition(
+    simulation_grid: np.ndarray, domain_config: DomainConfig
+) -> None:
     # Pressure Top
     if (
         domain_config.boundary_conditions.pressure_top.type
@@ -112,31 +106,35 @@ def generate_simulation_grid(domain_config: DomainConfig) -> np.ndarray:
             domain_config.boundary_conditions.pressure_top.value
         )
 
-    # Pressure Right
-    if (
-        domain_config.boundary_conditions.pressure_right.type
-        == BoundaryConditionType.DIRICHLET
-    ):
-        simulation_grid[Layer.PRESSURE.value, :, domain_config.grid_points_x + 1] = (
-            float(domain_config.boundary_conditions.pressure_right.value)
-        )
+    # Left Border
+    simulation_grid[Layer.PRESSURE.value, :, 0] = simulation_grid[
+        Layer.PRESSURE.value, :, 1
+    ]
 
-    # Pressure Bottom
-    if (
-        domain_config.boundary_conditions.pressure_bottom.type
-        == BoundaryConditionType.DIRICHLET
-    ):
-        simulation_grid[Layer.PRESSURE.value, 0] = float(
-            domain_config.boundary_conditions.pressure_bottom.value
-        )
+    # Right Border
+    simulation_grid[Layer.PRESSURE.value, :, simulation_grid.shape[2] - 1] = (
+        simulation_grid[Layer.PRESSURE.value, :, simulation_grid.shape[2] - 2]
+    )
 
-    # Pressure Left
-    if (
-        domain_config.boundary_conditions.pressure_left.type
-        == BoundaryConditionType.DIRICHLET
-    ):
-        simulation_grid[Layer.PRESSURE.value, :, 0] = float(
-            domain_config.boundary_conditions.pressure_left.value
-        )
+    # Lower Border
+    simulation_grid[Layer.PRESSURE.value, 0] = simulation_grid[Layer.PRESSURE.value, 1]
+
+
+def generate_simulation_grid(domain_config: DomainConfig) -> np.ndarray:
+    """Generate Simulation Grid based on Layers and domain config
+
+    Args:
+        domain_config (DomainConfig): domain configuration
+
+    Returns:
+        np.ndarray: Generated Simulation Grid
+    """
+    simulation_grid = np.zeros(
+        (len(Layer), domain_config.grid_points_y + 2, domain_config.grid_points_x + 2)
+    )
+
+    # Add Boundary Conditions
+    enforce_velocity_boundary_conditions(simulation_grid, domain_config)
+    enforce_pressure_boundary_condition(simulation_grid, domain_config)
 
     return simulation_grid

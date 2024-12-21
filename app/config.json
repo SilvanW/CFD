@@ -1,7 +1,8 @@
 {
     "solver": {
-        "max_iterations": 500,
-        "target_residual": 0.00001
+        "max_iterations": 1000,
+        "target_residual": 0.00001,
+        "time_step": 0.01
     },
     "domain": {
         "real_width": 1,
@@ -48,7 +49,7 @@
         }
     },
     "fluid": {
-        "density": 1,
+        "density": 1.0,
         "kinematic_viscosity": 0.01
     }
 }

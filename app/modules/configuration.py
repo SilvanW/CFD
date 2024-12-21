@@ -27,6 +27,7 @@ class SolverConfig(BaseModel):
 
     max_iterations: PositiveInt
     target_residual: PositiveFloat
+    time_step: PositiveFloat
 
 
 class BoundaryConditionType(Enum):
@@ -67,6 +68,11 @@ class DomainConfig(BaseModel):
     grid_points_x: int
     grid_points_y: int
     boundary_conditions: BoundaryConditionConfig
+
+    @computed_field
+    @property
+    def grid_cell_size(self) -> float:
+        return self.real_height / (self.grid_points_x - 1)
 
 
 class FluidConfig(BaseModel):

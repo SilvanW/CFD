@@ -44,6 +44,8 @@ def plot_pressure_heatmap(
         plt.gca().add_line(bottom_line)
         plt.gca().add_line(right_line)
 
+    return imshow
+
 
 def plot_velocity_quiver_plot(
     simulation_grid: np.ndarray, show_boundary_box: bool = False
@@ -88,3 +90,5 @@ def plot_velocity_quiver_plot(
         plt.gca().add_line(left_line)
         plt.gca().add_line(bottom_line)
         plt.gca().add_line(right_line)
+
+    return quiver
