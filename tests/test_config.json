@@ -1,7 +1,8 @@
 {
     "solver": {
         "max_iterations": 500,
-        "target_residual": 0.00001
+        "target_residual": 0.00001,
+        "time_step": 0.01
     },
     "domain": {
         "real_width": 1,
