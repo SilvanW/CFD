@@ -92,3 +92,24 @@ def plot_velocity_quiver_plot(
         plt.gca().add_line(right_line)
 
     return quiver
+
+
+def plot_velocity_streamlines(simulation_grid: np.ndarray) -> figure:
+    """Plot the Velocity Field from the Simulation Grid as Streamline Plot
+
+    Args:
+        simulation_grid (np.ndarray): Simulation Grid
+
+    Returns:
+        figure: plt.quiver Visualisation
+    """
+    velocity_x = simulation_grid[Layer.VELOCITY_X.value]
+    velocity_y = simulation_grid[Layer.VELOCITY_Y.value]
+
+    magnitude = np.sqrt(velocity_x**2 + velocity_y**2)
+    x = np.linspace(0, simulation_grid.shape[2], simulation_grid.shape[2])
+    y = np.linspace(0, simulation_grid.shape[1] + 2, simulation_grid.shape[1])
+
+    streamline = plt.streamplot(x, y, velocity_x, velocity_y, color=magnitude)
+
+    return streamline
