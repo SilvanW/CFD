@@ -94,7 +94,10 @@ def plot_velocity_quiver_plot(
     return quiver
 
 
-def plot_velocity_streamlines(simulation_grid: np.ndarray) -> figure:
+def plot_velocity_streamlines(
+    simulation_grid: np.ndarray,
+    include_boundary_conditions: bool = False,
+) -> figure:
     """Plot the Velocity Field from the Simulation Grid as Streamline Plot
 
     Args:
@@ -103,13 +106,25 @@ def plot_velocity_streamlines(simulation_grid: np.ndarray) -> figure:
     Returns:
         figure: plt.quiver Visualisation
     """
-    velocity_x = simulation_grid[Layer.VELOCITY_X.value]
-    velocity_y = simulation_grid[Layer.VELOCITY_Y.value]
+    if include_boundary_conditions:
+        velocity_x = simulation_grid[Layer.VELOCITY_X.value]
+        velocity_y = simulation_grid[Layer.VELOCITY_Y.value]
 
-    magnitude = np.sqrt(velocity_x**2 + velocity_y**2)
-    x = np.linspace(0, simulation_grid.shape[2], simulation_grid.shape[2])
-    y = np.linspace(0, simulation_grid.shape[1] + 2, simulation_grid.shape[1])
+        magnitude = np.sqrt(velocity_x**2 + velocity_y**2)
+        x = np.linspace(0, simulation_grid.shape[2], simulation_grid.shape[2])
+        y = np.linspace(0, simulation_grid.shape[1], simulation_grid.shape[1])
+    else:
+        velocity_x = simulation_grid[Layer.VELOCITY_X.value, 1:-1, 1:-1]
+        velocity_y = simulation_grid[Layer.VELOCITY_Y.value, 1:-1, 1:-1]
+
+        magnitude = np.sqrt(velocity_x**2 + velocity_y**2)
+        x = np.linspace(1, simulation_grid.shape[2] - 1, simulation_grid.shape[2] - 2)
+        y = np.linspace(1, simulation_grid.shape[1] - 1, simulation_grid.shape[1] - 2)
 
     streamline = plt.streamplot(x, y, velocity_x, velocity_y, color=magnitude)
+
+    plt.colorbar(streamline.lines)
+
+    plt.title("Geschwindigkeitslinien")
 
     return streamline
