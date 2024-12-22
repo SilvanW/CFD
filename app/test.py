@@ -15,13 +15,18 @@ from modules.simulation import (
     get_intermediate_velocity,
     update_pressure_grid,
 )
-from modules.visualisation import plot_pressure_heatmap, plot_velocity_quiver_plot
+from modules.visualisation import (
+    plot_pressure_heatmap,
+    plot_velocity_quiver_plot,
+    plot_velocity_streamlines,
+)
 
 
 def simulate(
     simulation_grid: np.ndarray, app_config: AppConfig, delta_t: float
 ) -> None:
     plt.ion()
+    residuals: list[float] = []
     for iteration in range(app_config.solver.max_iterations):
         simulation_grid_one = simulation_grid.copy()
 
@@ -153,21 +158,39 @@ def simulate(
 
         print(f"Velocity Residual: {velocity_residual}")
 
+        residuals.append(velocity_residual)
+
         if velocity_residual <= app_config.solver.target_residual:
             print("Velocity Residual Small enough")
             break
 
-        plt.pause(0.0001)
+        plt.pause(0.00001)
 
     plt.ioff()
     print(iteration)
 
+    # Velocity_Quiver
     plt.clf()
-    plot_velocity_quiver_plot(simulation_grid, True)
-    plt.savefig("../images/velocity.png")
+    plot_velocity_quiver_plot(simulation_grid)
+    plt.savefig("../images/velocity_quiver.png")
+
+    # Velocity Streamlines
     plt.clf()
-    plot_pressure_heatmap(simulation_grid, True)
+    plot_velocity_streamlines(simulation_grid)
+    plt.savefig("../images/velocity_streamlines.png")
+
+    # Pressure Heatmap
+    plt.clf()
+    plot_pressure_heatmap(simulation_grid)
     plt.savefig("../images/pressure.png")
+
+    # Residuals
+    plt.clf()
+    plt.plot(residuals)
+    plt.title("Residuals")
+    plt.xlabel("Iterations")
+    plt.ylabel("Velocity Residual")
+    plt.savefig("../images/residuals.png")
 
 
 if __name__ == "__main__":
