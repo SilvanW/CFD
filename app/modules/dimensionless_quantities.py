@@ -28,3 +28,22 @@ def reynolds_number(
         raise ValueError("Characteristice Length cannot be negative")
 
     return (flow_speed * characteristic_lenth) / kinematic_viscosity
+
+
+def courant_number(flow_speed: float, time_step: float, grid_cell_size: float) -> float:
+    """Calculates the Courant Number
+
+    Args:
+        flow_speed [m/s] (float): Speed of the Fluid
+        time_step (float): Time step of the simulation
+        grid_cell_size (float): Size of one grid Zell
+
+    Raises:
+        ValueError: Flow Speed cannot be negative
+
+    Returns:
+        float: _description_
+    """
+    if flow_speed < 0.0:
+        raise ValueError("Flow Speed cannot be negative")
+    return flow_speed * time_step / grid_cell_size
