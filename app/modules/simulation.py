@@ -167,7 +167,9 @@ def get_intermediate_velocity(
             simulation_grid, layer, x_coord, y_coord
         ) + delta_t * (
             -(
-                get_simulation_grid_value(simulation_grid, layer, x_coord, y_coord)
+                get_simulation_grid_value(
+                    simulation_grid, Layer.VELOCITY_X, x_coord, y_coord
+                )
                 * central_difference_value(
                     simulation_grid,
                     layer,
@@ -176,9 +178,7 @@ def get_intermediate_velocity(
                     Direction.X,
                     grid_cell_size,
                 )
-                + get_simulation_grid_value(
-                    simulation_grid, Layer.VELOCITY_X, x_coord, y_coord
-                )
+                + get_simulation_grid_value(simulation_grid, layer, x_coord, y_coord)
                 * central_difference_value(
                     simulation_grid,
                     layer,
