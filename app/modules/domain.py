@@ -42,82 +42,64 @@ def enforce_velocity_boundary_conditions(
     domain_config: DomainConfig,
 ):
     # Velocity Top
-    if (
-        domain_config.boundary_conditions.velocity_top.type
-        == BoundaryConditionType.DIRICHLET
-    ):
-        simulation_grid[Layer.VELOCITY_X.value, domain_config.grid_points_y + 1] = (
-            float(domain_config.boundary_conditions.velocity_top.x_direction)
-        )
+    simulation_grid[Layer.VELOCITY_X.value, domain_config.grid_points_y + 1] = float(
+        domain_config.boundary_conditions.velocity_top.x_direction
+    )
 
-        simulation_grid[Layer.VELOCITY_Y.value, domain_config.grid_points_y + 1] = (
-            float(domain_config.boundary_conditions.velocity_top.y_direction)
-        )
+    simulation_grid[Layer.VELOCITY_Y.value, domain_config.grid_points_y + 1] = float(
+        domain_config.boundary_conditions.velocity_top.y_direction
+    )
 
     # Velocity Right
-    if (
-        domain_config.boundary_conditions.velocity_right.type
-        == BoundaryConditionType.DIRICHLET
-    ):
-        simulation_grid[Layer.VELOCITY_X.value, :, domain_config.grid_points_x + 1] = (
-            float(domain_config.boundary_conditions.velocity_right.x_direction)
-        )
+    simulation_grid[Layer.VELOCITY_X.value, :, domain_config.grid_points_x + 1] = float(
+        domain_config.boundary_conditions.velocity_right.x_direction
+    )
 
-        simulation_grid[Layer.VELOCITY_Y.value, :, domain_config.grid_points_x + 1] = (
-            float(domain_config.boundary_conditions.velocity_right.y_direction)
-        )
+    simulation_grid[Layer.VELOCITY_Y.value, :, domain_config.grid_points_x + 1] = float(
+        domain_config.boundary_conditions.velocity_right.y_direction
+    )
 
     # Velocity Bottom
-    if (
-        domain_config.boundary_conditions.velocity_bottom.type
-        == BoundaryConditionType.DIRICHLET
-    ):
-        simulation_grid[Layer.VELOCITY_X.value, 0] = float(
-            domain_config.boundary_conditions.velocity_bottom.x_direction
-        )
+    simulation_grid[Layer.VELOCITY_X.value, 0] = float(
+        domain_config.boundary_conditions.velocity_bottom.x_direction
+    )
 
-        simulation_grid[Layer.VELOCITY_Y.value, 0] = float(
-            domain_config.boundary_conditions.velocity_bottom.y_direction
-        )
+    simulation_grid[Layer.VELOCITY_Y.value, 0] = float(
+        domain_config.boundary_conditions.velocity_bottom.y_direction
+    )
 
     # Velocity Left
-    if (
-        domain_config.boundary_conditions.velocity_left.type
-        == BoundaryConditionType.DIRICHLET
-    ):
-        simulation_grid[Layer.VELOCITY_X.value, :, 0] = float(
-            domain_config.boundary_conditions.velocity_left.x_direction
-        )
+    simulation_grid[Layer.VELOCITY_X.value, :, 0] = float(
+        domain_config.boundary_conditions.velocity_left.x_direction
+    )
 
-        simulation_grid[Layer.VELOCITY_Y.value, :, 0] = float(
-            domain_config.boundary_conditions.velocity_left.y_direction
-        )
+    simulation_grid[Layer.VELOCITY_Y.value, :, 0] = float(
+        domain_config.boundary_conditions.velocity_left.y_direction
+    )
 
 
 def enforce_pressure_boundary_condition(
     simulation_grid: np.ndarray, domain_config: DomainConfig
 ) -> None:
     # Pressure Top
-    if (
-        domain_config.boundary_conditions.pressure_top.type
-        == BoundaryConditionType.DIRICHLET
-    ):
-        simulation_grid[Layer.PRESSURE.value, domain_config.grid_points_y + 1] = float(
-            domain_config.boundary_conditions.pressure_top.value
-        )
+    simulation_grid[Layer.PRESSURE.value, domain_config.grid_points_y + 1] = float(
+        domain_config.boundary_conditions.pressure_top.value
+    )
 
     # Left Border
-    simulation_grid[Layer.PRESSURE.value, :, 0] = simulation_grid[
-        Layer.PRESSURE.value, :, 1
+    simulation_grid[Layer.PRESSURE.value, 1:-1, 0] = simulation_grid[
+        Layer.PRESSURE.value, 1:-1, 1
     ]
 
     # Right Border
-    simulation_grid[Layer.PRESSURE.value, :, simulation_grid.shape[2] - 1] = (
-        simulation_grid[Layer.PRESSURE.value, :, simulation_grid.shape[2] - 2]
+    simulation_grid[Layer.PRESSURE.value, 1:-1, simulation_grid.shape[2] - 1] = (
+        simulation_grid[Layer.PRESSURE.value, 1:-1, simulation_grid.shape[2] - 2]
     )
 
     # Lower Border
-    simulation_grid[Layer.PRESSURE.value, 0] = simulation_grid[Layer.PRESSURE.value, 1]
+    simulation_grid[Layer.PRESSURE.value, 0, 1:-1] = simulation_grid[
+        Layer.PRESSURE.value, 1, 1:-1
+    ]
 
 
 def generate_simulation_grid(domain_config: DomainConfig) -> np.ndarray:
