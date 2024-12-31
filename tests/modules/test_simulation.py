@@ -10,7 +10,13 @@ from app.modules.domain import (
     get_simulation_grid_value,
     set_simulation_grid_value,
 )
-from app.modules.simulation import Direction, central_difference, laplace_operator
+from app.modules.simulation import (
+    Direction,
+    central_difference,
+    central_difference_value,
+    laplace_operator,
+    laplace_operator_value,
+)
 
 
 @pytest.fixture
@@ -28,47 +34,52 @@ def simulation_grid(test_config: AppConfig) -> np.ndarray:
 
 
 # Central Difference
-def test_central_difference_u_x(simulation_grid):
+def test_central_difference_value_u_x(simulation_grid):
     set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 1, 2, 2)
     set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 3, 2, 4)
 
-    differenced_grid = central_difference(
-        simulation_grid, Layer.VELOCITY_X, 2, 2, 1, Direction.X
+    assert (
+        central_difference_value(
+            simulation_grid, Layer.VELOCITY_X, 2, 2, Direction.X, 1
+        )
+        == 1
     )
-    assert get_simulation_grid_value(differenced_grid, Layer.VELOCITY_X, 2, 2) == 1
 
 
-def test_central_difference_u_y(simulation_grid):
+def test_central_difference_value_u_y(simulation_grid):
     set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 2, 1, 2)
     set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 2, 3, 4)
 
-    differenced_grid = central_difference(
-        simulation_grid, Layer.VELOCITY_X, 2, 2, 1, Direction.Y
+    assert (
+        central_difference_value(
+            simulation_grid, Layer.VELOCITY_X, 2, 2, Direction.Y, 1
+        )
+        == 1
     )
 
-    assert get_simulation_grid_value(differenced_grid, Layer.VELOCITY_X, 2, 2) == 1
 
-
-def test_central_difference_v_x(simulation_grid):
+def test_central_difference_value_v_x(simulation_grid):
     set_simulation_grid_value(simulation_grid, Layer.VELOCITY_Y, 1, 2, 2)
     set_simulation_grid_value(simulation_grid, Layer.VELOCITY_Y, 3, 2, 4)
 
-    differenced_grid = central_difference(
-        simulation_grid, Layer.VELOCITY_Y, 2, 2, 1, Direction.X
+    assert (
+        central_difference_value(
+            simulation_grid, Layer.VELOCITY_Y, 2, 2, Direction.X, 1
+        )
+        == 1
     )
 
-    assert get_simulation_grid_value(differenced_grid, Layer.VELOCITY_Y, 2, 2) == 1
 
-
-def test_central_difference_v_y(simulation_grid):
+def test_central_difference_value_v_y(simulation_grid):
     set_simulation_grid_value(simulation_grid, Layer.VELOCITY_Y, 2, 1, 2)
     set_simulation_grid_value(simulation_grid, Layer.VELOCITY_Y, 2, 3, 4)
 
-    differenced_grid = central_difference(
-        simulation_grid, Layer.VELOCITY_Y, 2, 2, 1, Direction.Y
+    assert (
+        central_difference_value(
+            simulation_grid, Layer.VELOCITY_Y, 2, 2, Direction.Y, 1
+        )
+        == 1
     )
-
-    assert get_simulation_grid_value(differenced_grid, Layer.VELOCITY_Y, 2, 2) == 1
 
 
 # Laplace Operator
@@ -81,3 +92,12 @@ def test_laplace_operator(simulation_grid):
     differenced_grid = laplace_operator(simulation_grid, Layer.VELOCITY_X, 2, 2, 1)
 
     assert get_simulation_grid_value(differenced_grid, Layer.VELOCITY_X, 2, 2) == 16
+
+
+def test_laplace_operator_value(simulation_grid):
+    set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 2, 1, 4)
+    set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 2, 3, 4)
+    set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 1, 2, 4)
+    set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 3, 2, 4)
+
+    assert laplace_operator_value(simulation_grid, Layer.VELOCITY_X, 2, 2, 1) == 16
