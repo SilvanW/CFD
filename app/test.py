@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from modules.configuration import AppConfig, read_config
+from modules.dimensionless_quantities import courant_number, reynolds_number
 from modules.domain import (
     Layer,
     enforce_velocity_boundary_conditions,
@@ -13,7 +14,9 @@ from modules.simulation import (
     calculate_velocity_residual,
     central_difference_value,
     get_intermediate_velocity,
+    right_hand_side_value,
     update_pressure_grid,
+    velocity_continuity,
 )
 from modules.visualisation import (
     plot_pressure_heatmap,
@@ -81,8 +84,6 @@ def simulate(
             app_config.domain.grid_cell_size,
         )
 
-        # plot_pressure_heatmap(simulation_grid_one, True)
-
         # get old velocity
         sim_grid_old = simulation_grid.copy()
 
@@ -140,8 +141,22 @@ def simulate(
         enforce_velocity_boundary_conditions(simulation_grid, app_config.domain)
 
         plt.clf()
-        plot_velocity_quiver_plot(simulation_grid, True)
-        # plot_pressure_heatmap(simulation_grid, True)
+        plt.contourf(simulation_grid[Layer.PRESSURE.value], cmap="coolwarm")
+        plt.colorbar()
+
+        velocity_x = simulation_grid[Layer.VELOCITY_X.value]
+        velocity_y = simulation_grid[Layer.VELOCITY_Y.value]
+
+        magnitude = np.sqrt(velocity_x**2 + velocity_y**2)
+        x = np.linspace(0, simulation_grid.shape[2], simulation_grid.shape[2])
+        y = np.linspace(0, simulation_grid.shape[1], simulation_grid.shape[1])
+
+        plt.streamplot(x, y, velocity_x, velocity_y, color=magnitude)
+
+        plt.xlim([0, 41])
+        plt.ylim([0, 41])
+
+        plt.title("Pressure & Velocity")
         plt.show()
 
         # Änderung klein
@@ -159,6 +174,10 @@ def simulate(
         print(f"Velocity Residual: {velocity_residual}")
 
         residuals.append(velocity_residual)
+
+        if np.isnan(velocity_residual):
+            print("Velocity Residual Exploded")
+            break
 
         if velocity_residual <= app_config.solver.target_residual:
             print("Velocity Residual Small enough")
@@ -198,4 +217,51 @@ if __name__ == "__main__":
 
     simulation_grid = generate_simulation_grid(app_config.domain)
 
+    # Check Config
+    courant = courant_number(
+        1, app_config.solver.time_step, app_config.domain.grid_cell_size
+    )
+    print(f"Courant Number: {courant}")
+
+    reynolds = reynolds_number(
+        1, app_config.domain.real_width, app_config.fluid.kinematic_viscosity
+    )
+
+    print(f"Reynolds Number: {reynolds}")
+
+    # source for that
+    if courant > 0.5:
+        raise ValueError("Courant number cannot be greater than 0.5")
+
+    if courant <= 0.1:
+        raise ValueError("Courant number cannot be smaller than 0.1")
+
     simulate(simulation_grid, app_config, app_config.solver.time_step)
+
+    plt.clf()
+    plt.contourf(simulation_grid[Layer.PRESSURE.value], cmap="coolwarm")
+    plt.colorbar()
+
+    velocity_x = simulation_grid[Layer.VELOCITY_X.value]
+    velocity_y = simulation_grid[Layer.VELOCITY_Y.value]
+
+    magnitude = np.sqrt(velocity_x**2 + velocity_y**2)
+    x = np.linspace(0, simulation_grid.shape[2], simulation_grid.shape[2])
+    y = np.linspace(0, simulation_grid.shape[1], simulation_grid.shape[1])
+
+    plt.streamplot(x, y, velocity_x, velocity_y, color=magnitude)
+
+    plt.xlim([0, 41])
+    plt.ylim([0, 41])
+
+    plt.title("Pressure & Velocity")
+    plt.savefig("../images/pressure_and_velocity.png")
+
+    # Check Continuity
+    divergence = velocity_continuity(simulation_grid, app_config.domain)
+    print(f"Final Divergence: {np.max(np.abs(divergence[Layer.PRESSURE.value]))}")
+
+    plt.clf()
+    plt.imshow(divergence[Layer.PRESSURE.value], origin="lower")
+    plt.colorbar()
+    plt.savefig("../images/continuity.png")
