@@ -12,9 +12,7 @@ from app.modules.domain import (
 )
 from app.modules.simulation import (
     Direction,
-    central_difference,
     central_difference_value,
-    laplace_operator,
     laplace_operator_value,
 )
 
@@ -83,17 +81,6 @@ def test_central_difference_value_v_y(simulation_grid):
 
 
 # Laplace Operator
-def test_laplace_operator(simulation_grid):
-    set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 2, 1, 4)
-    set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 2, 3, 4)
-    set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 1, 2, 4)
-    set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 3, 2, 4)
-
-    differenced_grid = laplace_operator(simulation_grid, Layer.VELOCITY_X, 2, 2, 1)
-
-    assert get_simulation_grid_value(differenced_grid, Layer.VELOCITY_X, 2, 2) == 16
-
-
 def test_laplace_operator_value(simulation_grid):
     set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 2, 1, 4)
     set_simulation_grid_value(simulation_grid, Layer.VELOCITY_X, 2, 3, 4)
