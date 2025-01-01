@@ -1,6 +1,7 @@
 {
     "solver": {
-        "max_iterations": 1000,
+        "max_iterations": 500,
+        "max_pressure_iterations": 50,
         "target_residual": 0.00001,
         "time_step": 0.01
     },
