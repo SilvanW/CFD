@@ -19,6 +19,7 @@ from modules.simulation import (
     velocity_continuity,
 )
 from modules.visualisation import (
+    plot_pressure_contour_velocity_streamlines,
     plot_pressure_heatmap,
     plot_velocity_quiver_plot,
     plot_velocity_streamlines,
@@ -203,22 +204,9 @@ def simulate(
         ]
 
         plt.clf()
-        plt.contourf(simulation_grid_one[Layer.PRESSURE.value], cmap="coolwarm")
-        plt.colorbar()
-
-        velocity_x = simulation_grid_one[Layer.VELOCITY_X.value]
-        velocity_y = simulation_grid_one[Layer.VELOCITY_Y.value]
-
-        magnitude = np.sqrt(velocity_x**2 + velocity_y**2)
-        x = np.linspace(0, simulation_grid_one.shape[2], simulation_grid_one.shape[2])
-        y = np.linspace(0, simulation_grid_one.shape[1], simulation_grid_one.shape[1])
-
-        plt.streamplot(x, y, velocity_x, velocity_y, color=magnitude)
-
-        plt.xlim([0, 41])
-        plt.ylim([0, 41])
-
-        plt.title("Pressure & Velocity")
+        plot_pressure_contour_velocity_streamlines(
+            simulation_grid_one, app_config.domain
+        )
         plt.show()
 
         # Änderung klein
@@ -304,22 +292,7 @@ if __name__ == "__main__":
     simulate(simulation_grid, app_config, app_config.solver.time_step)
 
     plt.clf()
-    plt.contourf(simulation_grid[Layer.PRESSURE.value], cmap="coolwarm")
-    plt.colorbar()
-
-    velocity_x = simulation_grid[Layer.VELOCITY_X.value]
-    velocity_y = simulation_grid[Layer.VELOCITY_Y.value]
-
-    magnitude = np.sqrt(velocity_x**2 + velocity_y**2)
-    x = np.linspace(0, simulation_grid.shape[2], simulation_grid.shape[2])
-    y = np.linspace(0, simulation_grid.shape[1], simulation_grid.shape[1])
-
-    plt.streamplot(x, y, velocity_x, velocity_y, color=magnitude)
-
-    plt.xlim([0, 41])
-    plt.ylim([0, 41])
-
-    plt.title("Pressure & Velocity")
+    plot_pressure_contour_velocity_streamlines(simulation_grid, app_config.domain)
     plt.savefig("../images/pressure_and_velocity.png")
 
     # Check Continuity
