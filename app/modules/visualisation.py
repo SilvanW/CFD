@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import figure
 from matplotlib.lines import Line2D
+from modules.configuration import DomainConfig
 from modules.domain import Layer
 
 
@@ -61,7 +62,6 @@ def plot_velocity_quiver_plot(
     """
     velocity_x = simulation_grid[Layer.VELOCITY_X.value]
     velocity_y = simulation_grid[Layer.VELOCITY_Y.value]
-
     magnitude = np.sqrt(velocity_x**2 + velocity_y**2)
 
     # Convert to angles
@@ -128,3 +128,30 @@ def plot_velocity_streamlines(
     plt.title("Geschwindigkeitslinien")
 
     return streamline
+
+
+def plot_pressure_contour_velocity_streamlines(
+    simulation_grid: np.ndarray, domain: DomainConfig
+) -> None:
+    """Plot Velocity Streamlines over Pressure Contour
+
+    Args:
+        simulation_grid (np.ndarray): Grid containing the Values to plot
+        domain (DomainConfig): Configuration of the domain
+    """
+    x = np.linspace(0, domain.real_width, simulation_grid.shape[2])
+    y = np.linspace(0, domain.real_height, simulation_grid.shape[1])
+    plt.contourf(x, y, simulation_grid[Layer.PRESSURE.value], cmap="coolwarm")
+    plt.colorbar()
+
+    velocity_x = simulation_grid[Layer.VELOCITY_X.value]
+    velocity_y = simulation_grid[Layer.VELOCITY_Y.value]
+
+    magnitude = np.sqrt(velocity_x**2 + velocity_y**2)
+
+    plt.streamplot(x, y, velocity_x, velocity_y, color=magnitude)
+
+    plt.xlim([0, domain.real_width])
+    plt.ylim([0, domain.real_height])
+
+    plt.title("Pressure & Velocity")
