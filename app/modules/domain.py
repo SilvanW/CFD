@@ -41,15 +41,6 @@ def enforce_velocity_boundary_conditions(
     simulation_grid: np.ndarray,
     domain_config: DomainConfig,
 ):
-    # Velocity Top
-    simulation_grid[Layer.VELOCITY_X.value, domain_config.grid_points_y + 1] = float(
-        domain_config.boundary_conditions.velocity_top.x_direction
-    )
-
-    simulation_grid[Layer.VELOCITY_Y.value, domain_config.grid_points_y + 1] = float(
-        domain_config.boundary_conditions.velocity_top.y_direction
-    )
-
     # Velocity Right
     simulation_grid[Layer.VELOCITY_X.value, :, domain_config.grid_points_x + 1] = float(
         domain_config.boundary_conditions.velocity_right.x_direction
@@ -77,6 +68,15 @@ def enforce_velocity_boundary_conditions(
         domain_config.boundary_conditions.velocity_left.y_direction
     )
 
+    # Velocity Top
+    simulation_grid[Layer.VELOCITY_X.value, domain_config.grid_points_y + 1] = float(
+        domain_config.boundary_conditions.velocity_top.x_direction
+    )
+
+    simulation_grid[Layer.VELOCITY_Y.value, domain_config.grid_points_y + 1] = float(
+        domain_config.boundary_conditions.velocity_top.y_direction
+    )
+
 
 def enforce_pressure_boundary_condition(
     simulation_grid: np.ndarray, domain_config: DomainConfig
@@ -97,9 +97,7 @@ def enforce_pressure_boundary_condition(
     )
 
     # Lower Border
-    simulation_grid[Layer.PRESSURE.value, 0, 1:-1] = simulation_grid[
-        Layer.PRESSURE.value, 1, 1:-1
-    ]
+    simulation_grid[Layer.PRESSURE.value, 0] = simulation_grid[Layer.PRESSURE.value, 1]
 
 
 def generate_simulation_grid(domain_config: DomainConfig) -> np.ndarray:

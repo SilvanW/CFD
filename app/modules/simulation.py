@@ -61,7 +61,6 @@ def laplace_operator_value(
 def get_intermediate_velocity(
     simulation_grid: np.ndarray,
     layer: Layer,
-    direction: Direction,
     x_coord: int,
     y_coord: int,
     dynamic_viscosity: float,
@@ -311,35 +310,15 @@ def calculate_velocity_residual(
     return np.sqrt(residual)
 
 
-def velocity_continuity(
-    simulation_grid: np.ndarray, domain_config: DomainConfig
-) -> np.ndarray:
-    divergence = np.zeros_like(simulation_grid)
+def velocity_continuity(simulation_grid: np.ndarray) -> np.ndarray:
+    """Calculate Maximal Continuity value of the Velocity Field
 
-    # Ignore outer cells next to boundary
-    for x_coord in range(2, simulation_grid.shape[2] - 2):
-        for y_coord in range(2, simulation_grid.shape[1] - 2):
-            set_simulation_grid_value(
-                divergence,
-                Layer.PRESSURE,
-                x_coord,
-                y_coord,
-                central_difference_value(
-                    simulation_grid,
-                    Layer.VELOCITY_X,
-                    x_coord,
-                    y_coord,
-                    Direction.X,
-                    domain_config.grid_cell_size,
-                )
-                + central_difference_value(
-                    simulation_grid,
-                    Layer.VELOCITY_Y,
-                    x_coord,
-                    y_coord,
-                    Direction.Y,
-                    domain_config.grid_cell_size,
-                ),
-            )
+    Args:
+        simulation_grid (np.ndarray): Simulation Grid
 
-    return divergence
+    Returns:
+        np.ndarray: divergence value field
+    """
+    return np.gradient(simulation_grid[Layer.VELOCITY_X.value], axis=1) + np.gradient(
+        simulation_grid[Layer.VELOCITY_Y.value], axis=0
+    )
