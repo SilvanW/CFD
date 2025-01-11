@@ -3,12 +3,9 @@ This Module is used to load a config json File and provide the Values in a Pydan
 """
 
 import json
-import logging
 import os
-from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, List, Optional
 
 # from dotenv import load_dotenv
 # from flatten_dict import flatten, unflatten
@@ -101,7 +98,9 @@ class AppConfig(BaseModel):
 
 
 @validate_call
-def read_config(config_path: FilePath = Path("./config.json")) -> AppConfig:
+def read_config(
+    config_path: FilePath = Path(os.path.join(".", "config.json"))
+) -> AppConfig:
     """Read config json file from specified path and return PydanticModel
 
     Args:
