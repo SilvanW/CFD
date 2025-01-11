@@ -75,7 +75,7 @@ def simulate(
         # 1.1 Geschwindigkeits Randbedingungen Erzwingen
         enforce_velocity_boundary_conditions(simulation_grid_one, app_config.domain)
 
-        # 2.1 RHS der Druck Poisson Gleichung
+        # 2.1 RHS der Druck Poisson Gleichung + Druck aus PPE berechnen
         for _ in range(app_config.solver.max_pressure_iterations):
             # Use temp pressure grid
             for x_coord in range(1, simulation_grid_one.shape[2] - 1):
@@ -126,6 +126,7 @@ def simulate(
                         ),
                     )
 
+            # 2.3 Druck RB erzwingen
             enforce_pressure_boundary_condition(simulation_grid_one, app_config.domain)
 
             simulation_grid[Layer.PRESSURE.value] = simulation_grid_one[
@@ -141,7 +142,7 @@ def simulate(
 
             if pressure_residual <= 1e-5:
                 print("Pressure residual Small enough")
-                # break
+                break
 
         # get old velocity
         sim_grid_old = simulation_grid.copy()
@@ -232,9 +233,12 @@ def simulate(
             print("Velocity Residual Exploded")
             break
 
-        if velocity_residual <= app_config.solver.target_residual:
+        if (
+            velocity_residual <= app_config.solver.target_residual
+            and iteration > app_config.solver.min_iterations
+        ):
             print("Velocity Residual Small enough")
-            # break
+            break
 
         plt.pause(0.00001)
 
@@ -309,3 +313,7 @@ if __name__ == "__main__":
     plt.imshow(divergence[Layer.PRESSURE.value], origin="lower")
     plt.colorbar()
     plt.savefig("../images/continuity.png")
+
+    print(
+        f"Divergence: {np.max(np.abs(np.gradient(simulation_grid[Layer.VELOCITY_X.value], axis=1) + np.gradient(simulation_grid[Layer.VELOCITY_Y.value], axis=0)))}"
+    )

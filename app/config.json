@@ -1,15 +1,16 @@
 {
     "solver": {
         "max_iterations": 500,
+        "min_iterations": 100,
         "max_pressure_iterations": 50,
         "target_residual": 0.00001,
-        "time_step": 0.01
+        "time_step": 0.001
     },
     "domain": {
         "real_width": 1,
         "real_height": 1,
-        "grid_points_x": 41,
-        "grid_points_y": 41,
+        "grid_points_x": 39,
+        "grid_points_y": 39,
         "boundary_conditions": {
             "velocity_top": {
                 "type": "dirichlet",

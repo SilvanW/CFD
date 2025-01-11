@@ -26,6 +26,7 @@ from pydantic import (
 class SolverConfig(BaseModel):
 
     max_iterations: PositiveInt
+    min_iterations: PositiveInt
     max_pressure_iterations: PositiveInt
     target_residual: PositiveFloat
     time_step: PositiveFloat
