@@ -235,7 +235,7 @@ def simulate(
 
         if (
             velocity_residual <= app_config.solver.target_residual
-            and iteration > app_config.solver.min_iterations
+            and iteration > app_config.solver.min_iterations - 1
         ):
             print("Velocity Residual Small enough")
             break
@@ -243,7 +243,7 @@ def simulate(
         plt.pause(0.00001)
 
     plt.ioff()
-    print(iteration)
+    print(f"Number of Iterations: {iteration + 1}")
 
     # Velocity_Quiver
     plt.clf()
@@ -278,26 +278,18 @@ if __name__ == "__main__":
 
     simulation_grid = generate_simulation_grid(app_config.domain)
 
-    # Check Config
+    # Calculate courant number
     courant = courant_number(
         1, app_config.solver.time_step, app_config.domain.grid_cell_size
     )
     print(f"Courant Number: {courant}")
 
+    # Calculate reynolds number
     reynolds = reynolds_number(
         1, app_config.domain.real_width, app_config.fluid.kinematic_viscosity
     )
 
     print(f"Reynolds Number: {reynolds}")
-
-    # source for that
-    if courant > 0.5:
-        pass
-        # raise ValueError("Courant number cannot be greater than 0.5")
-
-    if courant <= 0.1:
-        pass
-        # raise ValueError("Courant number cannot be smaller than 0.1")
 
     simulate(simulation_grid, app_config, app_config.solver.time_step)
 
@@ -306,14 +298,6 @@ if __name__ == "__main__":
     plt.savefig("../images/pressure_and_velocity.png")
 
     # Check Continuity
-    divergence = velocity_continuity(simulation_grid, app_config.domain)
-    print(f"Final Divergence: {np.max(np.abs(divergence[Layer.PRESSURE.value]))}")
-
-    plt.clf()
-    plt.imshow(divergence[Layer.PRESSURE.value], origin="lower")
-    plt.colorbar()
-    plt.savefig("../images/continuity.png")
-
-    print(
-        f"Divergence: {np.max(np.abs(np.gradient(simulation_grid[Layer.VELOCITY_X.value], axis=1) + np.gradient(simulation_grid[Layer.VELOCITY_Y.value], axis=0)))}"
-    )
+    divergence = velocity_continuity(simulation_grid)
+    print(f"Maximal Local Divergence: {np.max(np.abs(divergence))}")
+    print(f"Global Divergence: {np.sum(np.abs(divergence))}")
