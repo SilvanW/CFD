@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 from modules.configuration import AppConfig, read_config
@@ -265,6 +267,10 @@ def simulate(
 
 if __name__ == "__main__":
     app_config = read_config()
+
+    # Check if images forlder exists
+    if not os.path.exists("../images/"):
+        os.mkdir("../images")
 
     simulation_grid = generate_simulation_grid(app_config.domain)
 
