@@ -248,17 +248,17 @@ def simulate(
     # Velocity_Quiver
     plt.clf()
     plot_velocity_quiver_plot(simulation_grid_one)
-    plt.savefig("../images/velocity_quiver.png")
+    plt.savefig(os.path.join("..", "images", "velocity_quiver.png"))
 
     # Velocity Streamlines
     plt.clf()
     plot_velocity_streamlines(simulation_grid_one)
-    plt.savefig("../images/velocity_streamlines.png")
+    plt.savefig(os.path.join("..", "images", "velocity_streamlines.png"))
 
     # Pressure Heatmap
     plt.clf()
     plot_pressure_heatmap(simulation_grid_one)
-    plt.savefig("../images/pressure.png")
+    plt.savefig(os.path.join("..", "images", "pressure.png"))
 
     # Residuals
     plt.clf()
@@ -266,7 +266,12 @@ def simulate(
     plt.title("Residuals")
     plt.xlabel("Iterations")
     plt.ylabel("Velocity Residual")
-    plt.savefig("../images/residuals.png")
+    plt.savefig(os.path.join("..", "images", "residuals.png"))
+
+    # Pressure Velocity
+    plt.clf()
+    plot_pressure_contour_velocity_streamlines(simulation_grid, app_config.domain)
+    plt.savefig("../images/pressure_and_velocity.png")
 
 
 if __name__ == "__main__":
@@ -292,10 +297,6 @@ if __name__ == "__main__":
     print(f"Reynolds Number: {reynolds}")
 
     simulate(simulation_grid, app_config, app_config.solver.time_step)
-
-    plt.clf()
-    plot_pressure_contour_velocity_streamlines(simulation_grid, app_config.domain)
-    plt.savefig("../images/pressure_and_velocity.png")
 
     # Check Continuity
     divergence = velocity_continuity(simulation_grid)
